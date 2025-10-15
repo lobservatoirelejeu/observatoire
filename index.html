@@ -47,22 +47,28 @@
             z-index: 2;
         }
         
-        /* Binoculars decoration */
+        /* Observatory decoration */
         .container::before {
-            content: '🔭';
+            content: '';
             position: absolute;
             top: 20px;
             left: 30px;
-            font-size: 28px;
+            width: 20px;
+            height: 20px;
+            background: #F39C12;
+            border-radius: 50%;
             opacity: 0.7;
         }
         
         .container::after {
-            content: '🟠';
+            content: '';
             position: absolute;
             top: 20px;
             right: 30px;
-            font-size: 20px;
+            width: 15px;
+            height: 15px;
+            background: #F39C12;
+            border-radius: 50%;
             opacity: 0.6;
         }
         
@@ -136,8 +142,175 @@
         }
         
         .back-button::before {
-            content: '🏠';
-            margin-right: 10px;
+            content: '';
+            margin-right: 0px;
+        }
+        
+        /* Bird Animation Styles */
+        .bird-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .thinking-bird {
+            width: 300px;
+            height: 300px;
+            margin: 20px;
+            border-radius: 15px;
+            border: 3px solid #F39C12;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .question-text {
+            color: #F39C12;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .audio-controls {
+            background: rgba(243,156,18,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(243,156,18,0.3);
+        }
+        
+        .show-reply-btn {
+            background: linear-gradient(135deg, #E67E22 0%, #F39C12 100%);
+            color: #2C3E50;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 15px;
+            font-family: 'Arial Black', Arial, sans-serif;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .show-reply-btn:hover {
+            background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+            transform: translateY(-2px);
+        }
+        
+        .reset-answer-btn {
+            background: linear-gradient(135deg, #95A5A6 0%, #7F8C8D 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 15px;
+            font-family: 'Arial Black', Arial, sans-serif;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reset-answer-btn:hover {
+            background: linear-gradient(135deg, #7F8C8D 0%, #95A5A6 100%);
+            transform: translateY(-2px);
+        }
+        
+        .loading-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #F39C12 0%, #E67E22 100%);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+        
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .countdown-text {
+            color: #F39C12;
+            font-size: 16px;
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .bird-answer {
+            display: none;
+            background: rgba(243,156,18,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(243,156,18,0.4);
+            text-align: center;
+        }
+        
+        .bird-answer.show {
+            display: block;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bird-answer img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            border: 3px solid #F39C12;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(243,156,18,0.3);
+        }
+        
+        .bird-answer .answer-bird {
+            font-size: 60px;
+            margin: 15px;
+            animation: happy 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes happy {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .answer-text {
+            color: #F39C12;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
         }
         video { 
             width: 100%; 
@@ -170,7 +343,7 @@
         }
         
         .loading::after {
-            content: ' 🔍';
+            content: '';
         }
         .search-form { display: block; }
         .search-form.hidden { display: none; }
@@ -188,13 +361,31 @@
                 padding: 12px 24px; 
                 font-size: 14px; 
             }
-            video {
-                max-width: 100%;
-                border-width: 3px;
+            .thinking-bird {
+                width: 90px;
+                height: 90px;
+            }
+            .bird-container {
+                margin: 15px 0;
+            }
+            .question-text {
+                font-size: 20px;
+            }
+            .audio-controls {
+                padding: 15px;
+            }
+            .show-reply-btn {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+            .reset-answer-btn {
+                padding: 12px 24px;
+                font-size: 16px;
             }
             .container::before,
             .container::after {
-                font-size: 20px;
+                width: 15px;
+                height: 15px;
             }
         }
         
@@ -207,13 +398,31 @@
             h1 { font-size: 1.8em; }
             input { font-size: 16px; padding: 12px; }
             button { padding: 12px 20px; font-size: 14px; }
-            video {
-                max-width: 100%;
-                border-width: 2px;
+            .thinking-bird {
+                width: 70px;
+                height: 70px;
+            }
+            .bird-container {
+                margin: 10px 0;
+            }
+            .question-text {
+                font-size: 18px;
+            }
+            .audio-controls {
+                padding: 10px;
+            }
+            .show-reply-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .reset-answer-btn {
+                padding: 10px 20px;
+                font-size: 14px;
             }
             .container::before,
             .container::after {
-                font-size: 16px;
+                width: 12px;
+                height: 12px;
                 top: 10px;
             }
             .container::before { left: 15px; }
@@ -266,18 +475,145 @@
             document.getElementById('search-form').classList.add('hidden');
             document.getElementById('content').innerHTML = `
                 <button class="back-button" onclick="reset()">Retour à l'Observatoire</button>
-                <video controls autoplay>
-                    <source src="videos/${filename}" type="video/mp4">
-                </video>
+                
+                <div class="bird-container">
+                    <img src="videos/thinking.gif" alt="Thinking bird" class="thinking-bird" id="thinking-bird">
+                    <div class="question-text">Quel est ce son mystérieux?</div>
+                </div>
+                
+                <div class="loading-bar-container" id="loading-container">
+                    <div class="loading-bar" id="loading-bar"></div>
+                </div>
+                <div class="countdown-text" id="countdown-text">Révélation automatique dans 60s</div>
+                
+                <div class="audio-controls">
+                    <audio controls autoplay id="bird-audio" preload="auto">
+                        <source src="videos/${filename}" type="audio/mp4">
+                        <source src="videos/${filename}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                
+                <button class="show-reply-btn" onclick="showAnswer('${name}')">Montrer la Réponse</button>
+                <button class="reset-answer-btn" onclick="resetAnswer('${name}')" style="display: none;">Cacher la Réponse</button>
+                
+                <div class="bird-answer" id="bird-answer">
+                    <div class="answer-text">C'est moi!</div>
+                    <img src="videos/${name}.svg" alt="Bird identification" style="max-width: 400px; width: 100%; height: auto;" onerror="this.src='videos/${name}.jpg'; this.onerror=function(){this.src='videos/${name}.png'; this.onerror=function(){this.style.display='none';};}">
+                </div>
             `;
+            
+            // DON'T start countdown immediately - wait for audio to play
+            setupAudioAndCountdown(name);
+        }
+        
+        function setupAudioAndCountdown(name) {
+            const audio = document.getElementById('bird-audio');
+            const loadingContainer = document.getElementById('loading-container');
+            const countdownText = document.getElementById('countdown-text');
+            
+            if (!audio) return;
+            
+            // Hide loading bar until audio starts
+            loadingContainer.style.display = 'none';
+            countdownText.textContent = 'En attente du démarrage...';
+            
+            // Start countdown when audio plays
+            audio.addEventListener('play', () => {
+                loadingContainer.style.display = 'block';
+                startCountdown(name);
+            });
+            
+            // Stop countdown when audio pauses
+            audio.addEventListener('pause', () => {
+                countdownText.textContent = 'Audio en pause';
+                stopCountdown();
+            });
+            
+            // Try autoplay
+            setTimeout(() => audio.play().catch(() => {}), 500);
+        }
+        
+        let countdownInterval, autoRevealTimeout;
+        
+        function startCountdown(name) {
+            const loadingBar = document.getElementById('loading-bar');
+            const countdownText = document.getElementById('countdown-text');
+            let timeLeft = 60;
+            
+            // Clear existing timers
+            clearInterval(countdownInterval);
+            clearTimeout(autoRevealTimeout);
+            
+            // Reset bar
+            loadingBar.style.width = '0%';
+            
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                loadingBar.style.width = ((60 - timeLeft) / 60) * 100 + '%';
+                countdownText.textContent = `Révélation automatique dans ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    showAnswer(name);
+                }
+            }, 1000);
+        }
+        
+        function stopCountdown() {
+            clearInterval(countdownInterval);
+            clearTimeout(autoRevealTimeout);
         }
         
         function reset() {
+            stopCountdown();
             document.getElementById('search-form').classList.remove('hidden');
             document.getElementById('content').innerHTML = '';
             document.getElementById('search').value = '';
             document.getElementById('search').focus();
             location.hash = '';
+        }
+        
+        function showAnswer(name) {
+            const thinkingBird = document.getElementById('thinking-bird');
+            
+            stopCountdown();
+            
+            // Hide loading elements
+            document.getElementById('loading-container').style.display = 'none';
+            document.getElementById('countdown-text').style.display = 'none';
+            
+            // Replace thinking gif with bird image
+            thinkingBird.src = `videos/${name}.svg`;
+            thinkingBird.onerror = () => {
+                thinkingBird.src = `videos/${name}.jpg`;
+                thinkingBird.onerror = () => thinkingBird.src = `videos/${name}.png`;
+            };
+            
+            // Update text and buttons
+            document.querySelector('.question-text').textContent = 'C\'est moi!';
+            document.querySelector('.show-reply-btn').style.display = 'none';
+            document.querySelector('.reset-answer-btn').style.display = 'inline-block';
+            document.getElementById('bird-answer').style.display = 'none';
+        }
+        
+        function resetAnswer(name) {
+            const thinkingBird = document.getElementById('thinking-bird');
+            
+            // Reset to thinking gif
+            thinkingBird.src = 'videos/thinking.gif';
+            
+            // Show loading elements
+            document.getElementById('loading-container').style.display = 'block';
+            document.getElementById('countdown-text').style.display = 'block';
+            
+            // Update text and buttons
+            document.querySelector('.question-text').textContent = 'Quel est ce son mystérieux?';
+            document.querySelector('.show-reply-btn').style.display = 'inline-block';
+            document.querySelector('.reset-answer-btn').style.display = 'none';
+            
+            // Restart countdown
+            startCountdown(name);
         }
         
         

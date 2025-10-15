@@ -1,0 +1,12 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#FADBD8"/>
+  <ellipse cx="200" cy="180" rx="88" ry="68" fill="#E74C3C"/>
+  <ellipse cx="200" cy="120" rx="48" ry="52" fill="#E74C3C"/>
+  <polygon points="240,115 270,120 240,125" fill="#C0392B"/>
+  <ellipse cx="180" cy="170" rx="33" ry="47" fill="#C0392B" transform="rotate(-20 180 170)"/>
+  <ellipse cx="140" cy="192" rx="26" ry="43" fill="#C0392B" transform="rotate(-28 140 192)"/>
+  <circle cx="210" cy="110" r="8" fill="white"/>
+  <circle cx="212" cy="108" r="4" fill="black"/>
+  <text x="200" y="270" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#C0392B">Cardinal Rouge</text>
+  <text x="200" y="290" font-family="Arial" font-size="16" text-anchor="middle" fill="#666">Code: 5764</text>
+</svg>
