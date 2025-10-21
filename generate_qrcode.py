@@ -12,10 +12,10 @@ from pathlib import Path
 def generate_qr_codes():
     """
     Generate QR codes for all video files in the videos directory.
-    Each QR code will link to https://o5x.github.io/duonat/video#{video_id}
+    Each QR code will link to https://lobservatoirelejeu.github.io/observatoire/video#{video_id}
     """
     # Base URL for the video links
-    base_url = "https://o5x.github.io/duonat/video#"
+    base_url = "https://lobservatoirelejeu.github.io/observatoire/video#"
     
     # Path to the videos directory
     videos_dir = Path("videos")
@@ -72,7 +72,7 @@ def generate_single_qr_code(video_id):
     Args:
         video_id (str): The video ID to generate QR code for
     """
-    base_url = "https://o5x.github.io/duonat/video#"
+    base_url = "https://lobservatoirelejeu.github.io/observatoire/video#"
     video_url = f"{base_url}{video_id}"
     
     # Create a directory for QR codes if it doesn't exist
