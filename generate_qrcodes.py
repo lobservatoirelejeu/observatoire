@@ -11,7 +11,7 @@ except ImportError:
     QR_AVAILABLE = False
     print("Error: qrcode library not available. Install with: pip install qrcode[pil]")
 
-def generate_transparent_qr(video_id, qr_folder, bird_id, bird_name=None):
+def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
     """Generate a QR code with logo in center, black on white, no borders"""
     if not QR_AVAILABLE:
         return False
@@ -26,7 +26,7 @@ def generate_transparent_qr(video_id, qr_folder, bird_id, bird_name=None):
             border=0,  # No border
             image_factory=qrcode.image.pil.PilImage
         )
-        qr.add_data(f"https://lobservatoirelejeu.github.io/observatoire/#{video_id}")
+        qr.add_data(f"https://lobservatoirelejeu.github.io/observatoire/#{bird_code}")
         qr.make(fit=True)
         
         # Create QR image - black on white
@@ -62,7 +62,7 @@ def generate_transparent_qr(video_id, qr_folder, bird_id, bird_name=None):
             qr_img.paste(logo, (paste_x, paste_y), logo)
         
         # Save as PNG (keeping white background, not transparent)
-        qr_filename = f"{bird_id}.png"
+        qr_filename = f"{bird_code}.png"
         qr_path = os.path.join(qr_folder, qr_filename)
         
         # Convert to RGB to remove alpha channel (solid white background)
@@ -72,7 +72,7 @@ def generate_transparent_qr(video_id, qr_folder, bird_id, bird_name=None):
         final_img.save(qr_path, 'PNG')
         return True
     except Exception as e:
-        print(f"QR generation error for {bird_id}: {e}")
+        print(f"QR generation error for {bird_code}: {e}")
         return False
 
 def load_birdmap():
@@ -117,17 +117,16 @@ def generate_all_qrcodes():
     
     # Generate QR code for each bird
     for bird_code, bird_data in birdmap.items():
-        bird_id = bird_data.get('id', 'unknown')
         bird_name = bird_data.get('common', 'Unknown Bird')
         
-        print(f"Generating QR for {bird_id}: {bird_name} (hash: {bird_code})")
+        print(f"Generating QR for {bird_code}: {bird_name} (hash: {bird_code})")
         
-        if generate_transparent_qr(bird_code, qrcodes_folder, bird_id, bird_name):
-            print(f"  ✓ {bird_id}.png created")
+        if generate_transparent_qr(bird_code, qrcodes_folder, bird_name):
+            print(f"  ✓ {bird_code}.png created")
             success_count += 1
         else:
-            print(f"  ✗ Failed to create {bird_id}.png")
-            failed_birds.append(f"{bird_id} ({bird_name})")
+            print(f"  ✗ Failed to create {bird_code}.png")
+            failed_birds.append(f"{bird_code} ({bird_name})")
     
     # Summary
     print()
