@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie des Oiseaux - L'Observatoire</title>
+    <style>
+        @font-face {
+            font-family: 'More Sugar';
+            src: url('assets/MoreSugar-Thin.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/background.svg');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-family: 'More Sugar', cursive;
+            color: #ffa500;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #ffa500;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #ff8c00;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            justify-content: center;
+        }
+
+        .bird-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bird-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 165, 0, 0.3);
+        }
+
+        .bird-image {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: rgba(255, 165, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .bird-image img {
+            width: 100%;
+            aspect-ratio: 646 / 293;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .bird-info {
+            padding: 15px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .bird-code {
+            font-family: 'More Sugar', cursive;
+            color: #ffa500;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .bird-name {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+            color: white;
+            font-family: 'More Sugar', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bird-scientific {
+            font-size: 0.9em;
+            color: #ccc;
+            font-style: italic;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #ffa500;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/background.svg');
+                background-attachment: fixed;
+                background-size: cover;
+                background-position: center center;
+                background-repeat: no-repeat;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+            
+            .title {
+                font-size: 2.2em;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 0 20px;
+            }
+            .bird-card {
+                width: 100%;
+            }
+            .bird-image img {
+                aspect-ratio: 646 / 293;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="title">Galerie des Oiseaux</h1>
+        <p class="subtitle">Découvrez tous les oiseaux de L'Observatoire</p>
+        <a href="index.html" class="back-btn">← Retour au jeu</a>
+    </div>
+
+    <div class="loading" id="loading">Chargement de la galerie...</div>
+    <div class="gallery" id="gallery" style="display: none;"></div>
+
+    <script>
+        let birdMap = {};
+
+        async function loadBirdMap() {
+            try {
+                const response = await fetch('birdmap.json');
+                birdMap = await response.json();
+                createGallery();
+            } catch (e) {
+                document.getElementById('loading').textContent = 'Erreur lors du chargement des données.';
+                console.log('Impossible de charger birdmap.json:', e);
+            }
+        }
+
+        async function checkImageExists(url) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+        function createBirdCard(code, bird) {
+            const card = document.createElement('div');
+            card.className = 'bird-card';
+            card.onclick = () => window.location.href = `index.html#${code}`;
+            
+            card.innerHTML = `
+                <div class="bird-image" id="img-${code}">
+                    🐦
+                </div>
+                <div class="bird-info">
+                    <div class="bird-code">${code.toUpperCase()}</div>
+                    <div class="bird-name">${bird.common}</div>
+                    <div class="bird-scientific">${bird.scientific}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        async function createGallery() {
+            const gallery = document.getElementById('gallery');
+            const loading = document.getElementById('loading');
+            
+            // Sort birds by ID number
+            const sortedBirds = Object.entries(birdMap).sort((a, b) => 
+                a[1].id - b[1].id
+            );
+            
+            // Create cards for all birds
+            for (const [code, bird] of sortedBirds) {
+                const card = createBirdCard(code, bird);
+                gallery.appendChild(card);
+                
+                // Try to load the image
+                const imageUrl = `images/${code}.jpg`;
+                const imageExists = await checkImageExists(imageUrl);
+                
+                if (imageExists) {
+                    const imgContainer = document.getElementById(`img-${code}`);
+                    imgContainer.innerHTML = `<img src="${imageUrl}" alt="${bird.common}">`;
+                }
+            }
+            
+            // Show gallery and hide loading
+            loading.style.display = 'none';
+            gallery.style.display = 'grid';
+        }
+
+        // Load the gallery when page loads
+        window.onload = loadBirdMap;
+    </script>
+</body>
+
+</html>
