@@ -11,7 +11,7 @@ except ImportError:
     QR_AVAILABLE = False
     print("Error: qrcode library not available. Install with: pip install qrcode[pil]")
 
-def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
+def generate_qr_with_logo(url, output_path):
     """Generate a QR code with logo in center, black on white, no borders"""
     if not QR_AVAILABLE:
         return False
@@ -19,14 +19,14 @@ def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
         from PIL import Image, ImageDraw
         import os
         
-        # Create QR code with no border and larger size for logo insertion
+        # Create QR code with 1 square border and larger size for logo insertion
         qr = qrcode.QRCode(
             version=1, 
             box_size=10, 
-            border=0,  # No border
+            border=1,  # 1 square white margin
             image_factory=qrcode.image.pil.PilImage
         )
-        qr.add_data(f"https://lobservatoirelejeu.github.io/observatoire/#{bird_code}")
+        qr.add_data(url)
         qr.make(fit=True)
         
         # Create QR image - black on white
@@ -61,19 +61,30 @@ def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
             # Paste logo directly onto QR code with alpha blending
             qr_img.paste(logo, (paste_x, paste_y), logo)
         
-        # Save as PNG (keeping white background, not transparent)
-        qr_filename = f"{bird_code}.png"
-        qr_path = os.path.join(qr_folder, qr_filename)
-        
         # Convert to RGB to remove alpha channel (solid white background)
         final_img = Image.new("RGB", qr_img.size, (255, 255, 255))
         final_img.paste(qr_img, mask=qr_img.split()[-1] if qr_img.mode == "RGBA" else None)
         
-        final_img.save(qr_path, 'PNG')
+        # Save as PNG
+        final_img.save(output_path, 'PNG')
         return True
     except Exception as e:
-        print(f"QR generation error for {bird_code}: {e}")
+        print(f"QR generation error for {output_path}: {e}")
         return False
+
+def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
+    """Generate a QR code for a specific bird"""
+    url = f"https://lobservatoirelejeu.github.io/observatoire/jeu#{bird_code}"
+    qr_filename = f"{bird_code}.png"
+    qr_path = os.path.join(qr_folder, qr_filename)
+    return generate_qr_with_logo(url, qr_path)
+
+def generate_gallery_qr(qr_folder):
+    """Generate a QR code for the gallery page"""
+    url = "https://lobservatoirelejeu.github.io/observatoire/galerie"
+    qr_filename = "galerie.png"
+    qr_path = os.path.join(qr_folder, qr_filename)
+    return generate_qr_with_logo(url, qr_path)
 
 def load_birdmap():
     """Load bird data from birdmap.json"""
@@ -89,7 +100,7 @@ def load_birdmap():
         return None
 
 def generate_all_qrcodes():
-    """Generate QR codes for all birds in birdmap.json"""
+    """Generate QR codes for all birds in birdmap.json and gallery"""
     print("QR Code Generator")
     print("=" * 50)
     
@@ -106,14 +117,25 @@ def generate_all_qrcodes():
     qrcodes_folder = "qrcodes"
     Path(qrcodes_folder).mkdir(exist_ok=True)
     
-    print(f"Generating QR codes for {len(birdmap)} birds...")
+    print(f"Generating QR codes for {len(birdmap)} birds + gallery...")
     print(f"Output folder: {qrcodes_folder}")
-    print("QR codes will be black on white with logo in center (no borders)")
+    print("QR codes will be black on white with logo in center (1 square border)")
     print()
     
     # Track success/failure
     success_count = 0
     failed_birds = []
+    
+    # Generate QR code for gallery first
+    print("Generating QR for gallery: Galerie des Oiseaux")
+    if generate_gallery_qr(qrcodes_folder):
+        print("  ✓ gallery.png created")
+        success_count += 1
+    else:
+        print("  ✗ Failed to create gallery.png")
+        failed_birds.append("Gallery (Galerie des Oiseaux)")
+    
+    print()
     
     # Generate QR code for each bird
     for bird_code, bird_data in birdmap.items():
@@ -132,7 +154,7 @@ def generate_all_qrcodes():
     print()
     print("=" * 50)
     print(f"QR Code Generation Complete!")
-    print(f"Successfully generated: {success_count}/{len(birdmap)} QR codes")
+    print(f"Successfully generated: {success_count}/{len(birdmap) + 1} QR codes")
     
     if failed_birds:
         print(f"Failed to generate QR codes for:")
@@ -142,7 +164,7 @@ def generate_all_qrcodes():
         print("All QR codes generated successfully!")
     
     print(f"\nQR codes saved to: {os.path.abspath(qrcodes_folder)}")
-    print("QR codes are black on white PNG images with logo in center.")
+    print("QR codes are black on white PNG images with logo in center and 1 square border.")
 
 def main():
     try:

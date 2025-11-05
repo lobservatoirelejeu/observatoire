@@ -1,4 +1,8 @@
 # L'observatoire 
 
-https://lobservatoirelejeu.github.io/observatoire/
-https://lobservatoirelejeu.github.io/observatoire/gallery
+- https://lobservatoirelejeu.github.io/observatoire/jeu
+- https://lobservatoirelejeu.github.io/observatoire/galerie
+
+QRCode pour accéder à la galerie des oiseaux:
+
+![galerie](qrcodes/galerie.png)

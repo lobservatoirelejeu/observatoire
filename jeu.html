@@ -18,6 +18,11 @@
             src: url('assets/MoreSugar-Thin.ttf') format('truetype');
         }
 
+        @font-face {
+            font-family: 'BPImperial-Italic';
+            src: url('assets/BPimperialItalic.otf') format('opentype');
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('assets/background.svg');
@@ -39,53 +44,54 @@
             text-align: center;
         }
 
-        .title-image {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
+        .title-text {
+            font-family: 'BPImperial-Italic', serif;
+            font-size: 4em;
+            font-weight: 200;
+            color: #ffa500;
+            text-shadow: 3px 4px 0px rgba(255, 255, 255, 0.15);
             margin-top: 0px;
-            margin-bottom: 0px;
-        }
-
-        .search-form {
-            margin-bottom: 30px;
-        }
-
-        input {
-            padding: 20px;
-            font-size: 24px;
-            border: 3px solid white;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            margin-bottom: 20px;
             text-align: center;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 15px;
+            letter-spacing: 7px;
+            line-height: 1.1;
+            transform: rotate(-11deg);
         }
 
-        input:focus {
-            outline: none;
-            border-color: #ffa500;
-        }
 
-        button {
-            padding: 20px 30px;
-            font-size: 24px;
-            background: #ffa500;
-            color: #333;
+
+        .play-button {
+            padding: 15px 40px 15px 50px;
+            font-size: 28px;
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            color: #fff;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
+            font-family: 'More Sugar', cursive;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-width: 220px;
+            position: relative;
         }
 
-        button:hover {
-            background: #ff8c00;
+        .play-button:hover {
+            background: linear-gradient(135deg, #ff8c00, #ff7700);
+            transform: translateY(-3px);
         }
 
-        .result {
-            display: none;
+        .play-button::before {
+            content: '▶';
+            font-size: 24px;
+            color: white;
+            position: absolute;
+            left: 25px;
         }
 
         .image-container {
@@ -167,23 +173,26 @@
         }
 
         .reveal-btn {
-            padding: 15px 30px;
+            padding: 10px 25px;
             font-size: 18px;
-            background: #ffa500;
-            color: #333;
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            color: #fff;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            min-width: 120px;
+            font-family: 'More Sugar', cursive;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
             display: block;
             margin: 0 auto 20px;
-            width: 120px;
-            height: 50px;
+            min-width: 120px;
         }
 
         .reveal-btn:hover {
-            background: #ff8c00;
+            background: linear-gradient(135deg, #ff8c00, #ff7700);
+            transform: translateY(-2px);
         }
 
         .audio-player {
@@ -194,35 +203,43 @@
 
         .error {
             color: #ff6b6b;
-            font-size: 2em;
+            font-size: 1.5em;
             margin: 20px 0;
+            font-family: 'More Sugar', cursive;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            line-height: 1.4;
+        }
+
+        /* Mobile devices */
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 3em;
+                letter-spacing: 4px;
+            }
+            
+            .bird-name {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div id="search" class="search-form" style="display: none;">
-            <input type="text" id="input" placeholder="code" autocomplete="off" style="text-transform: uppercase;"
-                oninput="this.value = this.value.toUpperCase()">
-            <br>
-            <button onclick="find()">Rechercher</button>
-            <button onclick="randomBird()" style="margin-left: 10px;" title="Oiseau aléatoire">🎲</button>
-        </div>
-
-        <div id="result" class="result">
-            <img src="assets/title.png" class="title-image">
+        <div id="result" class="result" style="display: block;">
+            <h1 class="title-text" id="title" style="display:none;">L'Observatoire</h1>
 
             <div class="image-container">
-                <img id="play-button" src="assets/play.png" class="bird-image fade" style="cursor: pointer;" onclick="startMediaPlayer()">
-                <img id="thinking" src="assets/thinking.gif" class="bird-image fade" style="cursor: pointer; display: none;"></img>
-                <img id="bird" class="bird-image fade" style="display:none; opacity:0;">
+                <button id="play-button" class="play-button" onclick="startMediaPlayer()" style="display:none;">Écouter</button>
+                <img id="thinking" src="assets/thinking.gif" class="bird-image" style="display: none;">
+                <img id="bird" class="bird-image" style="display:none; opacity:0;">
+                <div id="error" class="error" style="display:none;"></div>
             </div>
 
-            <div class="bird-info">
+            <div class="bird-info" id="bird-info" style="display:none;">
                 <div id="countdown" class="countdown-timer" style="display:none;"></div>
-                <div id="name" class="bird-name fade"></div>
-                <div id="scientific" class="scientific-name fade"></div>
+                <div id="name" class="bird-name"></div>
+                <div id="scientific" class="scientific-name"></div>
             </div>
 
             <canvas id="canvas" class="visualizer" style="display:none"></canvas>
@@ -232,8 +249,6 @@
             <audio id="audio" controls class="audio-player" style="display:none">
                 <source id="source">
             </audio>
-
-            <div id="error" class="error" style="display:none"></div>
         </div>
     </div>
 
@@ -337,14 +352,11 @@
 
             if (!hasJpg && !hasMp3) {
                 clearInterval(timer);
-                $('error').textContent = `CODE "${code}" introuvable`;
-                show('error');
-                $('reveal').textContent = 'Retour à l\'accueil';
-                $('reveal').onclick = back;
-                $('reveal').style.opacity = '1';
-                $('reveal').style.pointerEvents = 'auto';
+                showError(`Code "${code}" introuvable. Veuillez accéder à cette page avec le qrcode au dos des cartes.`);
                 return;
             }
+
+            showGame();
 
             if (hasJpg) $('bird').src = `images/${code}.jpg`;
             
@@ -356,29 +368,14 @@
                     if (!timer) startGuessing();
                 });
             }
-            
-            // Play button is already visible by default, no need to show/hide
-        }
-
-        function randomBird() {
-            // Get all available bird codes from birdMap
-            const birdCodes = Object.keys(birdMap);
-            if (birdCodes.length === 0) {
-                console.log('No bird codes available');
-                return;
-            }
-            
-            // Select a random bird code
-            const randomCode = birdCodes[Math.floor(Math.random() * birdCodes.length)];
-            
-            // Set the input field to the random code (preserve original case)
-            $('input').value = randomCode;
-            
-            // Ensure the page navigation works properly
-            find();
         }
 
         function startMediaPlayer() {
+            if (!code) {
+                showError('Aucun oiseau spécifié. Veuillez accéder à cette page avec le qrcode au dos des cartes.');
+                return;
+            }
+            
             hide('play-button');
             show('thinking');
             
@@ -393,6 +390,35 @@
             }
         }
 
+        function showError(message) {
+            show('title');
+            hide('play-button');
+            hide('bird-info');
+            hide('canvas');
+            hide('reveal');
+            hide('audio');
+            hide('countdown');
+            hide('thinking');
+            hide('bird');
+            $('name').textContent = '';
+            $('scientific').textContent = '';
+            $('error').textContent = message;
+            show('error');
+        }
+
+        function showGame() {
+            show('title');
+            show('play-button');
+            show('bird-info');
+            show('canvas');
+            hide('error');
+            progress = 0;
+            drawWave();
+            show('reveal');
+            $('reveal').style.opacity = '0';
+            $('reveal').style.pointerEvents = 'none';
+        }
+
         function startGuessing() {
             hide('play-button');
             show('thinking');
@@ -405,7 +431,7 @@
             timer = setInterval(() => {
                 const audio = $('audio');
                 if (!audio || !audio.paused) {
-                    timeLeft -= 0.05; // Decrease by 0.05 seconds (50ms interval)
+                    timeLeft -= 0.05;
                     $('countdown').textContent = `${Math.ceil(timeLeft)}s`;
                     
                     progress = ((totalTime - timeLeft) / totalTime) * 100;
@@ -433,55 +459,29 @@
             }
         }
 
-        function find() {
-            if (!audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) { console.log('AudioContext failed:', e); }
-            }
-
-            const inputCode = $('input').value.trim();
-            if (!inputCode) return;
-            
-            const originalCode = Object.keys(birdMap).find(key => 
-                key.toLowerCase() === inputCode.toLowerCase()) || inputCode;
-            
-            code = originalCode;
-            location.hash = originalCode;
-            hide('search');
-            $('search').style.visibility = 'hidden';
-            show('result');
-            show('canvas');
-            progress = 0;
-
-            drawWave();
-            show('reveal');
-            $('reveal').style.opacity = '0';
-            $('reveal').style.pointerEvents = 'none';
-            
-            loadBird();
-        }
-
         function reveal() {
-            clearInterval(timer); progress = 100;
-            // Fade out thinking gif, fade in bird image, fade out reveal button, fade in names
-            const fadeOut = el => { el.classList.add('fade-out'); };
+            clearInterval(timer); 
+            progress = 100;
+            
+            const fadeOut = el => el.classList.add('fade-out');
             const fadeIn = el => { el.classList.remove('fade-out'); el.style.opacity = 1; };
+            
             fadeOut($('thinking'));
             fadeOut($('reveal'));
-            hide('countdown'); // Hide countdown timer
-            // Also fade out play button if it's still visible
+            hide('countdown');
+            
             if ($('play-button').style.display !== 'none') {
                 fadeOut($('play-button'));
             }
+            
             setTimeout(() => {
                 hide('thinking');
                 hide('play-button');
-                // Fade out reveal button but keep its space (no display:none)
                 $('reveal').style.opacity = '0';
                 $('reveal').style.pointerEvents = 'none';
                 show('bird');
-                setTimeout(() => { fadeIn($('bird')); }, 10);
+                setTimeout(() => fadeIn($('bird')), 10);
+                
                 const bird = birdMap[code];
                 if (bird) {
                     fadeOut($('name'));
@@ -505,58 +505,14 @@
             }, 250);
         }
 
-        function back() {
-            clearInterval(timer);
-            
-            const audio = $('audio');
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-                hide('audio');
-            }
-            
-            progress = 0;
-            ['canvas', 'reveal', 'thinking', 'bird', 'error', 'play-button', 'countdown'].forEach(hide);
-            
-            location.hash = '';
-            hide('search'); // Hide search form when going back to empty state
-            hide('result');
-            $('input').value = '';
-            code = null;
-        }
-
         window.onload = async () => {
             await loadBirdMap();
             
             if (location.hash) {
-                // Show search form and load the bird if there's a hash
-                show('search');
-                $('input').value = location.hash.slice(1).toLowerCase();
-                $('input').focus();
-                find();
-            }
-            // If no hash, keep search form hidden
-        };
-
-        $('input').onkeydown = e => {
-            if (e.key === 'Enter') find();
-            if (e.key === 'Escape') back();
-        };
-
-        document.onkeydown = e => {
-            if (e.key === 'Escape') back();
-            if (e.key === ' ' && code) {
-                e.preventDefault();
-                reveal();
-            }
-        };
-
-        window.onhashchange = () => {
-            const currentHash = location.hash.slice(1);
-            if (!currentHash) {
-                back();
-            } else if (currentHash !== code) {
-                location.reload();
+                code = location.hash.slice(1);
+                loadBird();
+            } else {
+                showError('Aucun oiseau spécifié. Veuillez accéder à cette page avec le qrcode au dos des cartes.');
             }
         };
     </script>

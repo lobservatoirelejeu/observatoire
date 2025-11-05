@@ -176,19 +176,10 @@
             }
         }
 
-        async function checkImageExists(url) {
-            return new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-                img.src = url;
-            });
-        }
-
         function createBirdCard(code, bird) {
             const card = document.createElement('div');
             card.className = 'bird-card';
-            card.onclick = () => window.location.href = `index.html#${code}`;
+            card.onclick = () => window.location.href = `jeu#${code}`;
             
             card.innerHTML = `
                 <div class="bird-image" id="img-${code}">
@@ -212,24 +203,35 @@
                 a[1].common.localeCompare(b[1].common)
             );
             
-            // Create cards for all birds
-            for (const [code, bird] of sortedBirds) {
+            // Create cards for all birds immediately (no waiting for images)
+            const cardPromises = sortedBirds.map(([code, bird]) => {
                 const card = createBirdCard(code, bird);
                 gallery.appendChild(card);
                 
-                // Try to load the image
+                // Load image asynchronously without blocking
                 const imageUrl = `images/${code}.jpg`;
-                const imageExists = await checkImageExists(imageUrl);
+                loadImageLazily(code, imageUrl, bird.common);
                 
-                if (imageExists) {
-                    const imgContainer = document.getElementById(`img-${code}`);
-                    imgContainer.innerHTML = `<img src="${imageUrl}" alt="${bird.common}">`;
-                }
-            }
+                return card;
+            });
             
-            // Show gallery and hide loading
+            // Show gallery immediately
             loading.style.display = 'none';
             gallery.style.display = 'grid';
+        }
+
+        function loadImageLazily(code, imageUrl, altText) {
+            const img = new Image();
+            img.onload = () => {
+                const imgContainer = document.getElementById(`img-${code}`);
+                if (imgContainer) {
+                    imgContainer.innerHTML = `<img src="${imageUrl}" alt="${altText}" loading="lazy">`;
+                }
+            };
+            img.onerror = () => {
+                // Keep the bird emoji if image fails to load
+            };
+            img.src = imageUrl;
         }
 
         // Load the gallery when page loads
