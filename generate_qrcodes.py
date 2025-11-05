@@ -74,7 +74,7 @@ def generate_qr_with_logo(url, output_path):
 
 def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
     """Generate a QR code for a specific bird"""
-    url = f"https://lobservatoirelejeu.github.io/observatoire/jeu#{bird_code}"
+    url = f"https://lobservatoirelejeu.github.io/observatoire/oiseau#{bird_code}"
     qr_filename = f"{bird_code}.png"
     qr_path = os.path.join(qr_folder, qr_filename)
     return generate_qr_with_logo(url, qr_path)
