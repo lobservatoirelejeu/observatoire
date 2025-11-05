@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galerie des Oiseaux - L'Observatoire</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
     <style>
         @font-face {
             font-family: 'More Sugar';
@@ -43,27 +44,6 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             font-size: 3em;
             margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            color: #ccc;
-            margin-bottom: 20px;
-        }
-
-        .back-btn {
-            display: inline-block;
-            background: #ffa500;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .back-btn:hover {
-            background: #ff8c00;
         }
 
         .gallery {
@@ -119,14 +99,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .bird-code {
-            font-family: 'More Sugar', cursive;
-            color: #ffa500;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 8px;
         }
 
         .bird-name {
@@ -185,8 +157,6 @@
 <body>
     <div class="header">
         <h1 class="title">Galerie des Oiseaux</h1>
-        <p class="subtitle">Découvrez tous les oiseaux de L'Observatoire</p>
-        <a href="index.html" class="back-btn">← Retour au jeu</a>
     </div>
 
     <div class="loading" id="loading">Chargement de la galerie...</div>
@@ -225,7 +195,6 @@
                     🐦
                 </div>
                 <div class="bird-info">
-                    <div class="bird-code">${code.toUpperCase()}</div>
                     <div class="bird-name">${bird.common}</div>
                     <div class="bird-scientific">${bird.scientific}</div>
                 </div>
@@ -238,9 +207,9 @@
             const gallery = document.getElementById('gallery');
             const loading = document.getElementById('loading');
             
-            // Sort birds by ID number
+            // Sort birds by name alphabetically
             const sortedBirds = Object.entries(birdMap).sort((a, b) => 
-                a[1].id - b[1].id
+                a[1].common.localeCompare(b[1].common)
             );
             
             // Create cards for all birds

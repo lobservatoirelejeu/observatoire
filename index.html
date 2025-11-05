@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L'Observatoire</title>
+    <link rel="icon" type="image/x-icon" href="assets/logo.png">
     <style>
         * {
             margin: 0;
@@ -131,6 +132,14 @@
             opacity: 0 !important;
         }
 
+        .countdown-timer {
+            font-size: 48px;
+            color: #ffa500;
+            font-family: 'More Sugar', cursive;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
 
         .bird-name {
             font-size: 38px;
@@ -193,21 +202,25 @@
 
 <body>
     <div class="container">
-        <div id="search" class="search-form">
+        <div id="search" class="search-form" style="display: none;">
             <input type="text" id="input" placeholder="code" autocomplete="off" style="text-transform: uppercase;"
                 oninput="this.value = this.value.toUpperCase()">
-            <br><button onclick="find()">Rechercher</button>
+            <br>
+            <button onclick="find()">Rechercher</button>
+            <button onclick="randomBird()" style="margin-left: 10px;" title="Oiseau aléatoire">🎲</button>
         </div>
 
         <div id="result" class="result">
             <img src="assets/title.png" class="title-image">
 
             <div class="image-container">
-                <img id="thinking" src="assets/thinking.gif" class="bird-image fade">
+                <img id="play-button" src="assets/play.png" class="bird-image fade" style="cursor: pointer;" onclick="startMediaPlayer()">
+                <img id="thinking" src="assets/thinking.gif" class="bird-image fade" style="cursor: pointer; display: none;"></img>
                 <img id="bird" class="bird-image fade" style="display:none; opacity:0;">
             </div>
 
             <div class="bird-info">
+                <div id="countdown" class="countdown-timer" style="display:none;"></div>
                 <div id="name" class="bird-name fade"></div>
                 <div id="scientific" class="scientific-name fade"></div>
             </div>
@@ -225,6 +238,8 @@
     </div>
 
     <script>
+        const totalTime = 60; // Total countdown time in seconds
+        
         let timer, code, audioContext, analyser, dataArray, progress = 0, birdMap = {};
         const $ = id => document.getElementById(id);
         const show = id => $(id).style.display = 'block';
@@ -316,72 +331,134 @@
 
         async function loadBird() {
             const [hasJpg, hasMp3] = await Promise.all([
-                checkFile(`images/${code}.jpg`), checkFile(`sounds/${code}.mp3`)
+                checkFile(`images/${code}.jpg`), 
+                checkFile(`sounds/${code}.mp3`)
             ]);
 
             if (!hasJpg && !hasMp3) {
                 clearInterval(timer);
                 $('error').textContent = `CODE "${code}" introuvable`;
                 show('error');
-                hide('reveal');
                 $('reveal').textContent = 'Retour à l\'accueil';
                 $('reveal').onclick = back;
-                show('reveal');
+                $('reveal').style.opacity = '1';
+                $('reveal').style.pointerEvents = 'auto';
                 return;
             }
 
             if (hasJpg) $('bird').src = `images/${code}.jpg`;
+            
             if (hasMp3) {
                 $('source').src = `sounds/${code}.mp3`;
-                $('audio').load(); show('audio');
+                $('audio').load();
+                show('audio');
+                $('audio').addEventListener('play', () => {
+                    if (!timer) startGuessing();
+                });
+            }
+            
+            // Play button is already visible by default, no need to show/hide
+        }
 
-                const setupAudio = () => {
-                    $('audio').play().then(() => {
-                        setTimeout(() => {
-                            initVisualizer();
-                            if (audioContext && audioContext.state === 'suspended') {
-                                audioContext.resume();
-                            }
-                        }, 100);
-                    }).catch(() => {
-                        console.log('Lecture automatique bloquée');
-                        $('audio').addEventListener('play', () => {
-                            setTimeout(initVisualizer, 100);
-                        }, { once: true });
-                    });
-                };
+        function randomBird() {
+            // Get all available bird codes from birdMap
+            const birdCodes = Object.keys(birdMap);
+            if (birdCodes.length === 0) {
+                console.log('No bird codes available');
+                return;
+            }
+            
+            // Select a random bird code
+            const randomCode = birdCodes[Math.floor(Math.random() * birdCodes.length)];
+            
+            // Set the input field to the random code (preserve original case)
+            $('input').value = randomCode;
+            
+            // Ensure the page navigation works properly
+            find();
+        }
 
-                $('audio').addEventListener('canplay', setupAudio, { once: true });
+        function startMediaPlayer() {
+            hide('play-button');
+            show('thinking');
+            
+            const audio = $('audio');
+            if (audio && $('source').src) {
+                audio.play().then(() => {
+                    setTimeout(() => {
+                        initVisualizer();
+                        if (audioContext?.state === 'suspended') audioContext.resume();
+                    }, 100);
+                }).catch(console.log);
+            }
+        }
+
+        function startGuessing() {
+            hide('play-button');
+            show('thinking');
+            show('countdown');
+            $('thinking').style.opacity = '1';
+            
+            let timeLeft = totalTime;
+            $('countdown').textContent = `${timeLeft}s`;
+            
+            timer = setInterval(() => {
+                const audio = $('audio');
+                if (!audio || !audio.paused) {
+                    timeLeft -= 0.05; // Decrease by 0.05 seconds (50ms interval)
+                    $('countdown').textContent = `${Math.ceil(timeLeft)}s`;
+                    
+                    progress = ((totalTime - timeLeft) / totalTime) * 100;
+                    
+                    if (progress >= 100 || timeLeft <= 0) { 
+                        progress = 100;
+                        clearInterval(timer); 
+                        hide('countdown');
+                        reveal(); 
+                    }
+                }
+            }, 50);
+            
+            $('reveal').style.opacity = '1';
+            $('reveal').style.pointerEvents = 'auto';
+            
+            const audio = $('audio');
+            if (audio && $('source').src && audio.paused) {
+                audio.play().then(() => {
+                    setTimeout(() => {
+                        initVisualizer();
+                        if (audioContext?.state === 'suspended') audioContext.resume();
+                    }, 100);
+                }).catch(console.log);
             }
         }
 
         function find() {
-            // Initialize AudioContext on user interaction for mobile compatibility
             if (!audioContext) {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.log('Impossible de créer AudioContext:', e);
-                }
+                } catch (e) { console.log('AudioContext failed:', e); }
             }
 
-            code = $('input').value.trim();
-            if (!code) return;
-            location.hash = code; hide('search'); show('result'); show('canvas');
+            const inputCode = $('input').value.trim();
+            if (!inputCode) return;
+            
+            const originalCode = Object.keys(birdMap).find(key => 
+                key.toLowerCase() === inputCode.toLowerCase()) || inputCode;
+            
+            code = originalCode;
+            location.hash = originalCode;
+            hide('search');
+            $('search').style.visibility = 'hidden';
+            show('result');
+            show('canvas');
             progress = 0;
 
-            // Start visualizer immediately with flat line
             drawWave();
-
-            timer = setInterval(() => {
-                // Only increment progress if audio is not paused
-                const audio = $('audio');
-                if (!audio || !audio.paused) {
-                    progress += 5 / 60; // 5 / Time in second
-                    if (progress >= 100) { clearInterval(timer); reveal(); }
-                }
-            }, 50);
-            show('reveal'); $('reveal').style.opacity = '1'; $('reveal').style.pointerEvents = 'auto';
+            show('reveal');
+            $('reveal').style.opacity = '0';
+            $('reveal').style.pointerEvents = 'none';
+            
             loadBird();
         }
 
@@ -392,8 +469,14 @@
             const fadeIn = el => { el.classList.remove('fade-out'); el.style.opacity = 1; };
             fadeOut($('thinking'));
             fadeOut($('reveal'));
+            hide('countdown'); // Hide countdown timer
+            // Also fade out play button if it's still visible
+            if ($('play-button').style.display !== 'none') {
+                fadeOut($('play-button'));
+            }
             setTimeout(() => {
                 hide('thinking');
+                hide('play-button');
                 // Fade out reveal button but keep its space (no display:none)
                 $('reveal').style.opacity = '0';
                 $('reveal').style.pointerEvents = 'none';
@@ -423,14 +506,36 @@
         }
 
         function back() {
-            clearInterval(timer); location.hash = '';
-            show('search'); hide('result');
-            $('input').value = ''; $('input').focus(); code = null;
+            clearInterval(timer);
+            
+            const audio = $('audio');
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+                hide('audio');
+            }
+            
+            progress = 0;
+            ['canvas', 'reveal', 'thinking', 'bird', 'error', 'play-button', 'countdown'].forEach(hide);
+            
+            location.hash = '';
+            hide('search'); // Hide search form when going back to empty state
+            hide('result');
+            $('input').value = '';
+            code = null;
         }
 
         window.onload = async () => {
-            await loadBirdMap(); $('input').focus();
-            if (location.hash) { $('input').value = location.hash.slice(1).toLowerCase(); find(); }
+            await loadBirdMap();
+            
+            if (location.hash) {
+                // Show search form and load the bird if there's a hash
+                show('search');
+                $('input').value = location.hash.slice(1).toLowerCase();
+                $('input').focus();
+                find();
+            }
+            // If no hash, keep search form hidden
         };
 
         $('input').onkeydown = e => {
@@ -440,11 +545,19 @@
 
         document.onkeydown = e => {
             if (e.key === 'Escape') back();
-            if (e.key === ' ' && code) { e.preventDefault(); reveal(); }
+            if (e.key === ' ' && code) {
+                e.preventDefault();
+                reveal();
+            }
         };
 
         window.onhashchange = () => {
-            location.reload();
+            const currentHash = location.hash.slice(1);
+            if (!currentHash) {
+                back();
+            } else if (currentHash !== code) {
+                location.reload();
+            }
         };
     </script>
 </body>
