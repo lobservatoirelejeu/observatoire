@@ -123,13 +123,35 @@ def process_videos():
     
     # Process all file pairs
     bird_index = 1  # Start ID from 1
+    used_codes = set()  # Track used codes to detect collisions
+    
     for bird_id, files in file_pairs.items():
-        # Generate 3-digit ID format (001, 002, 003, etc.)
-        three_digit_id = f"{bird_index:03d}"
+
+        # Generate unique hash code with collision detection
+        attempts = 0
+        init = 0
+        max_attempts = 1000  # Safety limit
         
-        # Generate hash using 3-digit ID (last 4 chars of MD5)
-        hash_object = hashlib.md5(three_digit_id.encode())
-        bird_code = hash_object.hexdigest()[-4:]
+        while attempts < max_attempts:
+            # Generate 3-digit ID format (001, 002, 003, etc.)
+            three_digit_id = f"{bird_index + init + attempts:03d}"
+            
+            # Generate hash using 3-digit ID (last 4 chars of MD5)
+            hash_object = hashlib.md5(three_digit_id.encode())
+            bird_code = hash_object.hexdigest()[-4:]
+            
+            # Check for collision
+            if bird_code not in used_codes:
+                used_codes.add(bird_code)
+                break
+            
+            init = 200
+            attempts += 1
+            print(f"  ⚠️ Collision detected for {bird_code}, trying next ID...")
+        
+        if attempts >= max_attempts:
+            print(f"❌ GENERATION FAILED: Could not generate unique code for bird {bird_id}")
+            return
         
         # Get bird names from labels and add ID (we know they exist from validation)
         bird_data = labels[bird_id].copy()  # Copy to avoid modifying original

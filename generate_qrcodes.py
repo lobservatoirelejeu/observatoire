@@ -75,7 +75,17 @@ def generate_qr_with_logo(url, output_path):
 def generate_transparent_qr(bird_code, qr_folder, bird_name=None):
     """Generate a QR code for a specific bird"""
     url = f"https://lobservatoirelejeu.github.io/observatoire/oiseau#{bird_code}"
-    qr_filename = f"{bird_code}.png"
+    
+    # Include bird name in filename, replacing spaces with underscores
+    if bird_name:
+        # Clean bird name for filename: replace spaces with underscores, remove special chars
+        clean_name = bird_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+        # Remove other problematic characters
+        clean_name = ''.join(c for c in clean_name if c.isalnum() or c in '_-')
+        qr_filename = f"{bird_code}_{clean_name}.png"
+    else:
+        qr_filename = f"{bird_code}.png"
+    
     qr_path = os.path.join(qr_folder, qr_filename)
     return generate_qr_with_logo(url, qr_path)
 
@@ -144,10 +154,13 @@ def generate_all_qrcodes():
         print(f"Generating QR for {bird_code}: {bird_name} (hash: {bird_code})")
         
         if generate_transparent_qr(bird_code, qrcodes_folder, bird_name):
-            print(f"  ✓ {bird_code}.png created")
+            # Clean bird name for display
+            clean_name = bird_name.replace(' ', '_').replace('/', '_').replace('\\', '_')
+            clean_name = ''.join(c for c in clean_name if c.isalnum() or c in '_-')
+            print(f"  ✓ {bird_code}_{clean_name}.png created")
             success_count += 1
         else:
-            print(f"  ✗ Failed to create {bird_code}.png")
+            print(f"  ✗ Failed to create QR for {bird_name}")
             failed_birds.append(f"{bird_code} ({bird_name})")
     
     # Summary

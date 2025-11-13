@@ -405,9 +405,9 @@
     "id": "081"
   },
   "7c95": {
-    "common": "Pie-grièche écorcheur",
-    "scientific": "Lanius collurio",
-    "id": "098"
+    "common": "Faisan de Colchide",
+    "scientific": "Phasianus colchicus",
+    "id": "082"
   },
   "76ae": {
     "common": "Grue cendrée",
@@ -483,6 +483,11 @@
     "common": "Hirondelle rustique",
     "scientific": "Hirundo rustica",
     "id": "097"
+  },
+  "c61f": {
+    "common": "Pie-grièche écorcheur",
+    "scientific": "Lanius collurio",
+    "id": "299"
   },
   "50ab": {
     "common": "Pouillot véloce",
